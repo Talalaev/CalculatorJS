@@ -1,0 +1,23 @@
+{
+  "name": "Calculator",
+  "description": "класс калькулятора на javascript. пригодится как основа для созданий калькуляторов сложнее бухгалтерского. работает с простыми выражениями и скобочными группами.",
+  "main": "dest/Calculator.min.js",
+  "authors": [
+    "Mike"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "calculator",
+    "calc",
+    "calculatorJS"
+  ],
+  "homepage": "https://github.com/Talalaev/CalculatorJS",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
