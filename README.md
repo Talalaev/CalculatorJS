@@ -1,7 +1,8 @@
 #Калькулятор
 
 #### Установка (install)
-bower i CalculatorJS
+``` $ bower i CalculatorJS --save ```
+
 
 Представляет из себя класс калькулятора на нативном JavaScript (CoffeeScript). Файл demo.html рабочий и полностью автономный. 
 Описание и инструкция составляются.
