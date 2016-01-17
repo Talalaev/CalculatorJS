@@ -1,0 +1,152 @@
+@import "compass"
+@import "compass/reset"
+
+// Use to configure your settings
+$height_display:                    60px
+$width_button:                      60px
+$height_button:                     40px
+$margin_horizontal:                 5px
+$margin_vertical:                   10px
+$number_button_goriz_line:          5
+$number_button_vert_line:           5
+
+
+
+$vertical_offset:                   $height_display + $margin_vertical
+
+$width_calc:                        ($number_button_goriz_line - 1) * $margin_horizontal + $width_button * $number_button_goriz_line + $margin_horizontal * 2
+
+$height_calc:                       ($number_button_vert_line - 1) * $margin_vertical + $height_button * $number_button_vert_line + $vertical_offset + $margin_vertical * 2
+
+
+
+
+#calculator
+    display:                        block
+    position:                       absolute
+    width:                          $width_calc
+    height:                         $height_calc
+    border:                         1px solid #d4d4d4
+    border-radius:                  4px
+    left:                           5px
+    color:                          #666
+    background:                     #fbfbfb
+    +transition-property(top, left)
+    +transition-duration(500ms)
+    +transition-timing-function(ease)
+    
+    #calc_area
+        position:                   relative
+        margin:                     $margin_vertical $margin_horizontal
+            
+        div
+            position:               absolute
+            border-radius:          2px
+            box-sizing:             border-box
+            background:             #fff
+            +transition-property(top, left)
+            +transition-duration(500ms)
+            +transition-timing-function(ease)
+    
+    .calc_button
+        border:                     1px solid #d4d4d4
+        text-align:                 center
+        width:                      $width_button
+        height:                     $height_button
+        padding:                    10px
+        cursor:                     pointer
+        &:hover
+            background:             #fbfbfb
+        &:active
+            background:             #fbfbfb
+            border:                 1px inset #d4d4d4
+    
+    // First Line
+    #calc_display
+        border:                     1px solid #d4d4d4
+        box-shadow:                 0 1px 2px #d4d4d4 inset
+        top:                        0 
+        left:                       ($width_button + $margin_horizontal) * 0
+        line-height:                20px
+        padding:                    ($height_display/2-10) 4px 4px
+        width:                      100%
+        height:                     $height_display
+        text-align:                 right
+        overflow:                   hidden
+        font-size:                  24px
+        
+    // Second Line
+    .calc_backspace
+        top:                        ($height_button + $margin_vertical) * 0 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 0
+    .calc_deleteChars
+        top:                        ($height_button + $margin_vertical) * 0 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 1
+    .calc_changeSign
+        top:                        ($height_button + $margin_vertical) * 0 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 2
+    .calc_bracketOpen
+        top:                        ($height_button + $margin_vertical) * 0 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 3
+    .calc_bracketClose
+        top:                        ($height_button + $margin_vertical) * 0 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 4
+        
+    // Third Line
+    .calc_seven
+        top:                        ($height_button + $margin_vertical) * 1 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 0
+    .calc_eight
+        top:                        ($height_button + $margin_vertical) * 1 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 1
+    .calc_nine
+        top:                        ($height_button + $margin_vertical) * 1 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 2
+    .calc_divide
+        top:                        ($height_button + $margin_vertical) * 1 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 3
+        
+    // Fourth Line
+    .calc_four
+        top:                        ($height_button + $margin_vertical) * 2 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 0
+    .calc_five
+        top:                        ($height_button + $margin_vertical) * 2 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 1
+    .calc_six
+        top:                        ($height_button + $margin_vertical) * 2 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 2
+    .calc_multiply
+        top:                        ($height_button + $margin_vertical) * 2 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 3
+    
+    // Fifth Line
+    .calc_one
+        top:                        ($height_button + $margin_vertical) * 3 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 0
+    .calc_two
+        top:                        ($height_button + $margin_vertical) * 3 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 1
+    .calc_three
+        top:                        ($height_button + $margin_vertical) * 3 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 2
+    .calc_subtract
+        top:                        ($height_button + $margin_vertical) * 3 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 3
+    
+    // Sixth Line
+    .calc_null
+        top:                        ($height_button + $margin_vertical) * 4 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 0
+        width:                      $width_button * 2 + $margin_horizontal 
+    .calc_comma
+        top:                        ($height_button + $margin_vertical) * 4 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 2
+    .calc_add
+        top:                        ($height_button + $margin_vertical) * 4 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 3
+    .calc_calculate
+        top:                        ($height_button + $margin_vertical) * 1 + $vertical_offset
+        left:                       ($width_button + $margin_horizontal) * 4
+        height:                     $height_button * 4 + $margin_vertical * 3
+        padding-top:                ($height_button * 4 + $margin_vertical * 3) / 2 - 10

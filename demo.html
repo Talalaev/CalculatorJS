@@ -1,0 +1,503 @@
+<html>
+    <head>
+       <title>Calculator</title>
+       <script>
+		/*! Calculator 2015-06-21 */
+		var Calc_template = ''
+			+'<div id="calc_area">'
+				+'<div id="calc_display"></div>'
+				+'<div class="calc_backspace calc_button" data-action="deleteLastChar">&#8592;</div>'
+				+'<div class="calc_deleteChars calc_button" data-action="deleteChars">Del</div>'
+				+'<div class="calc_changeSign calc_button" data-action="changeSign">&#177;</div>'
+				+'<div class="calc_bracketOpen calc_button" data-type="bracketOpen">(</div>'
+				+'<div class="calc_bracketClose calc_button" data-type="bracketClose">)</div>'
+				+'<div class="calc_divide calc_button" data-type="operator">/</div>'
+				+'<div class="calc_multiply calc_button" data-type="operator">*</div>'
+				+'<div class="calc_subtract calc_button" data-type="operator">-</div>'
+				+'<div class="calc_add calc_button" data-type="operator">+</div>'
+				+'<div class="calc_calculate calc_button" data-action="calculate">=</div>'
+				+'<div class="calc_comma calc_button" data-type="comma">.</div>'
+				+'<div class="calc_null  calc_button" data-type="number">0</div>'
+				+'<div class="calc_one calc_button" data-type="number">1</div>'
+				+'<div class="calc_two calc_button" data-type="number">2</div>'
+				+'<div class="calc_three calc_button" data-type="number">3</div>'
+				+'<div class="calc_four calc_button" data-type="number">4</div>'
+				+'<div class="calc_five calc_button" data-type="number">5</div>'
+				+'<div class="calc_six calc_button" data-type="number">6</div>'
+				+'<div class="calc_seven calc_button" data-type="number">7</div>'
+				+'<div class="calc_eight calc_button" data-type="number">8</div>'
+				+'<div class="calc_nine calc_button" data-type="number">9</div>'
+			+'</div>';
+		var Calculator;
+
+		Calculator = (function() {
+		  function Calculator(options) {
+			this.options = options;
+			this.expression = this.options.expression || "";
+			this.lastCharType = this.options.lastCharType || "";
+		  }
+
+		  Calculator.prototype.toGlue = function(char, typeChar) {
+			var bracketsClose, bracketsOpen;
+			bracketsOpen = this.expression.match(/\(/g) ? this.expression.match(/\(/g).length : 0;
+			bracketsClose = this.expression.match(/\)/g) ? this.expression.match(/\)/g).length : 0;
+			if (typeChar === "bracketClose" && bracketsOpen === bracketsClose) {
+			  return this.expression;
+			}
+			if (this.expression.length >= 26) {
+			  return this.expression;
+			}
+			if (typeChar === "comma" && this.expression.match(/\d+?\.\d+?$/)) {
+			  return this.expression;
+			}
+			if (typeChar === "comma" && (this.lastCharType !== "number" || this.lastCharType === "comma")) {
+			  return this.expression;
+			}
+			if (typeChar === "bracketOpen" && (this.lastCharType === "bracketClose" || this.lastCharType === "comma" || this.lastCharType === "number")) {
+			  return this.expression;
+			}
+			if ((typeChar === "bracketClose" || typeChar === "operator" || typeChar === "comma") && (!this.lastCharType || this.lastCharType === "bracketOpen" || this.lastCharType === "operator" || this.lastCharType === "comma")) {
+			  return this.expression;
+			}
+			if (this.lastCharType === "operator" && typeChar === "number") {
+			  this.lastCharType = typeChar;
+			  return this.expression += " " + char[0];
+			}
+			if (this.lastCharType && typeChar !== this.lastCharType && typeChar !== "comma" && typeChar !== "bracketClose" && typeChar !== "number") {
+			  this.lastCharType = typeChar;
+			  return this.expression += " " + char[0];
+			}
+			this.lastCharType = typeChar;
+			return this.expression += char[0];
+		  };
+
+		  Calculator.prototype.display = function(elem, text) {
+			return elem.innerHTML = text;
+		  };
+
+		  Calculator.prototype.add = function(str) {
+			var replacer, res;
+			replacer = function(str, num1, num1Float, num2, num2Float) {
+			  return ((+num1 * 1e9) + (+num2 * 1e9)) / 1e9;
+			};
+			res = str.replace(/(\-?\d+\.?(\d+)?) ?\+ ?(\-?\d+\.?(\d+)?)/, replacer);
+			if (res !== str) {
+			  res = this.add(res);
+			}
+			return res;
+		  };
+
+		  Calculator.prototype.subtract = function(str) {
+			var replacer, res;
+			replacer = function(str, num1, num1Float, num2, num2Float) {
+			  return (num1 * 1e9 - num2 * 1e9) / 1e9;
+			};
+			res = str.replace(/(\-?\d+\.?(\d+)?) ?\- ?(\-?\d+\.?(\d+)?)/, replacer);
+			if (res !== str) {
+			  res = this.subtract(res);
+			}
+			return res;
+		  };
+
+		  Calculator.prototype.multiply = function(str) {
+			var replacer, res;
+			replacer = function(str, num1, num1Float, num2, num2Float) {
+			  return ((num1 * 1e9) * (num2 * 1e9)) / 1e18;
+			};
+			res = str.replace(/(\-?\d+\.?(\d+)?) ?\* ?(\-?\d+\.?(\d+)?)/, replacer);
+			if (res !== str) {
+			  res = this.multiply(res);
+			}
+			return res;
+		  };
+
+		  Calculator.prototype.divide = function(str) {
+			var replacer, res;
+			replacer = function(str, num1, num1Float, num2, num2Float) {
+			  return num1 / num2;
+			};
+			res = str.replace(/(\-?\d+\.?(\d+)?) ?\/ ?(\-?\d+\.?(\d+)?)/, replacer);
+			if (res !== str) {
+			  res = this.divide(res);
+			}
+			return res;
+		  };
+
+		  Calculator.prototype.calculate = function(str) {
+			var res, self;
+			self = this;
+			res = str.replace(/\(([^(^)]+)\)/g, function(str, inBrackets) {
+			  return self.add(self.subtract(self.multiply(self.divide(inBrackets))));
+			});
+			if (res !== str) {
+			  res = this.calculate(res);
+			}
+			return this.add(this.subtract(this.multiply(this.divide(res))));
+		  };
+
+		  Calculator.prototype.deleteLastChar = function(str) {
+			var lastButOne, res;
+			res = null;
+			lastButOne = str.slice(str.length - 2, str.length - 1);
+			if (lastButOne === '.' || lastButOne === ' ') {
+			  res = str.slice(0, str.length - 2);
+			  if (~res[res.length - 1].search(/\d/)) {
+				this.lastCharType = "number";
+			  }
+			  if (~res[res.length - 1].search(/\(/)) {
+				this.lastCharType = "bracketOpen";
+			  }
+			  if (~res[res.length - 1].search(/\)/)) {
+				this.lastCharType = "bracketClose";
+			  }
+			  if (~res[res.length - 1].search(/[\+\-\*\/]/)) {
+				this.lastCharType = "operator";
+			  }
+			  return res;
+			}
+			if (lastButOne === '-') {
+			  res = str.slice(0, str.length - 3);
+			  if (~res[res.length - 1].search(/\d/)) {
+				this.lastCharType = "number";
+			  }
+			  if (~res[res.length - 1].search(/\(/)) {
+				this.lastCharType = "bracketOpen";
+			  }
+			  if (~res[res.length - 1].search(/\)/)) {
+				this.lastCharType = "bracketClose";
+			  }
+			  if (~res[res.length - 1].search(/[\+\-\*\/]/)) {
+				this.lastCharType = "operator";
+			  }
+			  return res;
+			}
+			if (str.length <= 1) {
+			  return this.lastCharType = "";
+			}
+			res = str.slice(0, str.length - 1);
+			if (~res[res.length - 1].search(/\d/)) {
+			  this.lastCharType = "number";
+			}
+			if (~res[res.length - 1].search(/\(/)) {
+			  this.lastCharType = "bracketOpen";
+			}
+			if (~res[res.length - 1].search(/\)/)) {
+			  this.lastCharType = "bracketClose";
+			}
+			if (~res[res.length - 1].search(/[\+\-\*\/]/)) {
+			  this.lastCharType = "operator";
+			}
+			return res;
+		  };
+
+		  Calculator.prototype.deleteChars = function(str) {
+			return this.lastCharType = "";
+		  };
+
+		  Calculator.prototype.changeSign = function(str) {
+			var res;
+			res = str.replace(/((\-?\d+\.?(\d+)?\)?) ([\+\-\*\/]) ((\-?)(\d+\.?(\d+)?)))$/, function(str, allStr, num1, num1Float, operator, allNum2, sign, num2, num2Float) {
+			  if (operator === "-") {
+				return num1 + " + " + num2;
+			  }
+			  if (operator === "+") {
+				return num1 + " - " + num2;
+			  }
+			  if ((operator === "*" || operator === "/") && sign) {
+				return num1 + " " + operator + " " + num2;
+			  } else {
+				return num1 + " " + operator + " -" + num2;
+			  }
+			});
+			if (res !== str) {
+			  return res;
+			}
+			return str.replace(/^(\(?)((\-?)(\d+\.?(\d+)?))$/, function(str, bracket, allNum, sign, num) {
+			  if (sign) {
+				return "" + bracket + num;
+			  } else {
+				return bracket + "-" + num;
+			  }
+			});
+		  };
+
+		  return Calculator;
+
+		})();
+
+		var My_calc,
+		  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+		  hasProp = {}.hasOwnProperty;
+
+		My_calc = (function(superClass) {
+		  extend(My_calc, superClass);
+
+		  function My_calc(options) {
+			var calc, display, self;
+			this.options = options;
+			self = this;
+			this.expression = this.options.expression || "";
+			this.lastCharType = this.options.lastCharType || "";
+			calc = document.createElement("DIV");
+			calc.id = "calculator";
+			calc.innerHTML = Calc_template;
+			document.body.appendChild(calc);
+			display = document.getElementById("calc_display");
+			calc.addEventListener('click', function(e) {
+			  var type;
+			  e.preventDefault();
+			  type = e.target.getAttribute("data-type");
+			  if (!!type) {
+				display.innerHTML = self.toGlue(e.target.innerHTML, type);
+			  }
+			  if (e.target.getAttribute("data-action")) {
+				display.innerHTML = self.expression = self[e.target.getAttribute("data-action")](self.expression);
+			  }
+			  return false;
+			});
+		  }
+
+		  return My_calc;
+
+		})(Calculator);
+
+		window.onload = function() {
+		  var calc, calcStyle, clickToView;
+		  new My_calc({});
+		  calc = document.getElementById("calculator");
+		  calcStyle = calc.style;
+		  calcStyle.top = "-500px";
+		  calcStyle.left = "1000px";
+		  clickToView = document.getElementById("click_to_view");
+		  return clickToView.addEventListener("click", function() {
+			calcStyle.top = window.innerHeight / 2 - calc.offsetHeight / 2 + "px";
+			return calcStyle.left = window.innerWidth / 2 - calc.offsetWidth / 2 + "px";
+		  });
+		};
+	   </script>
+       <style type="text/css">
+			html, body, div, span, applet, object, iframe,
+			h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+			a, abbr, acronym, address, big, cite, code,
+			del, dfn, em, img, ins, kbd, q, s, samp,
+			small, strike, strong, sub, sup, tt, var,
+			b, u, i, center,
+			dl, dt, dd, ol, ul, li,
+			fieldset, form, label, legend,
+			table, caption, tbody, tfoot, thead, tr, th, td,
+			article, aside, canvas, details, embed,
+			figure, figcaption, footer, header, hgroup,
+			menu, nav, output, ruby, section, summary,
+			time, mark, audio, video {
+			  margin: 0;
+			  padding: 0;
+			  border: 0;
+			  font: inherit;
+			  font-size: 100%;
+			  vertical-align: baseline;
+			}
+
+			html {
+			  line-height: 1;
+			}
+
+			ol, ul {
+			  list-style: none;
+			}
+
+			table {
+			  border-collapse: collapse;
+			  border-spacing: 0;
+			}
+
+			caption, th, td {
+			  text-align: left;
+			  font-weight: normal;
+			  vertical-align: middle;
+			}
+
+			q, blockquote {
+			  quotes: none;
+			}
+			q:before, q:after, blockquote:before, blockquote:after {
+			  content: "";
+			  content: none;
+			}
+
+			a img {
+			  border: none;
+			}
+
+			article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
+			  display: block;
+			}
+
+			#calculator {
+			  display: block;
+			  position: absolute;
+			  width: 330px;
+			  height: 330px;
+			  border: 1px solid #d4d4d4;
+			  border-radius: 4px;
+			  left: 5px;
+			  color: #666;
+			  background: #fbfbfb;
+			  -moz-transition-property: top, left;
+			  -o-transition-property: top, left;
+			  -webkit-transition-property: top, left;
+			  transition-property: top, left;
+			  -moz-transition-duration: 500ms;
+			  -o-transition-duration: 500ms;
+			  -webkit-transition-duration: 500ms;
+			  transition-duration: 500ms;
+			  -moz-transition-timing-function: ease;
+			  -o-transition-timing-function: ease;
+			  -webkit-transition-timing-function: ease;
+			  transition-timing-function: ease;
+			}
+			#calculator #calc_area {
+			  position: relative;
+			  margin: 10px 5px;
+			}
+			#calculator #calc_area div {
+			  position: absolute;
+			  border-radius: 2px;
+			  box-sizing: border-box;
+			  background: #fff;
+			  -moz-transition-property: top, left;
+			  -o-transition-property: top, left;
+			  -webkit-transition-property: top, left;
+			  transition-property: top, left;
+			  -moz-transition-duration: 500ms;
+			  -o-transition-duration: 500ms;
+			  -webkit-transition-duration: 500ms;
+			  transition-duration: 500ms;
+			  -moz-transition-timing-function: ease;
+			  -o-transition-timing-function: ease;
+			  -webkit-transition-timing-function: ease;
+			  transition-timing-function: ease;
+			}
+			#calculator .calc_button {
+			  border: 1px solid #d4d4d4;
+			  text-align: center;
+			  width: 60px;
+			  height: 40px;
+			  padding: 10px;
+			  cursor: pointer;
+			}
+			#calculator .calc_button:hover {
+			  background: #fbfbfb;
+			}
+			#calculator .calc_button:active {
+			  background: #fbfbfb;
+			  border: 1px inset #d4d4d4;
+			}
+			#calculator #calc_display {
+			  border: 1px solid #d4d4d4;
+			  box-shadow: 0 1px 2px #d4d4d4 inset;
+			  top: 0;
+			  left: 0px;
+			  line-height: 20px;
+			  padding: 20px 4px 4px;
+			  width: 100%;
+			  height: 60px;
+			  text-align: right;
+			  overflow: hidden;
+			  font-size: 24px;
+			}
+			#calculator .calc_backspace {
+			  top: 70px;
+			  left: 0px;
+			}
+			#calculator .calc_deleteChars {
+			  top: 70px;
+			  left: 65px;
+			}
+			#calculator .calc_changeSign {
+			  top: 70px;
+			  left: 130px;
+			}
+			#calculator .calc_bracketOpen {
+			  top: 70px;
+			  left: 195px;
+			}
+			#calculator .calc_bracketClose {
+			  top: 70px;
+			  left: 260px;
+			}
+			#calculator .calc_seven {
+			  top: 120px;
+			  left: 0px;
+			}
+			#calculator .calc_eight {
+			  top: 120px;
+			  left: 65px;
+			}
+			#calculator .calc_nine {
+			  top: 120px;
+			  left: 130px;
+			}
+			#calculator .calc_divide {
+			  top: 120px;
+			  left: 195px;
+			}
+			#calculator .calc_four {
+			  top: 170px;
+			  left: 0px;
+			}
+			#calculator .calc_five {
+			  top: 170px;
+			  left: 65px;
+			}
+			#calculator .calc_six {
+			  top: 170px;
+			  left: 130px;
+			}
+			#calculator .calc_multiply {
+			  top: 170px;
+			  left: 195px;
+			}
+			#calculator .calc_one {
+			  top: 220px;
+			  left: 0px;
+			}
+			#calculator .calc_two {
+			  top: 220px;
+			  left: 65px;
+			}
+			#calculator .calc_three {
+			  top: 220px;
+			  left: 130px;
+			}
+			#calculator .calc_subtract {
+			  top: 220px;
+			  left: 195px;
+			}
+			#calculator .calc_null {
+			  top: 270px;
+			  left: 0px;
+			  width: 125px;
+			}
+			#calculator .calc_comma {
+			  top: 270px;
+			  left: 130px;
+			}
+			#calculator .calc_add {
+			  top: 270px;
+			  left: 195px;
+			}
+			#calculator .calc_calculate {
+			  top: 120px;
+			  left: 260px;
+			  height: 190px;
+			  padding-top: 85px;
+			}
+
+			/*# sourceMappingURL=style.css.map */
+	   </style>
+    </head>
+    <body>
+        <h1 style="text-align:center; font-size: 28px; color:#484848">Hello, I'm a Calculator</h1>
+        <p id="click_to_view" style="text-align:center; cursor:pointer; font-size:18px; padding:20px; color:#515151">Click To View</p>
+    </body>
+</html>

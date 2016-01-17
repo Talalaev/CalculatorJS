@@ -1,0 +1,12 @@
+$ cat .gitignore
+*~
+*.css.map
+*.bat
+*.xlsx
+info.txt
+.sass-cache/
+bower_components/
+node_modules/
+img/
+_/components/javascripts/working/*.js
+_/components/styles/bootstrap3/*.css
