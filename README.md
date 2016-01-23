@@ -1,12 +1,12 @@
 #Калькулятор
 
+Представляет из себя класс калькулятора на нативном JavaScript (CoffeeScript). Файл demo.html рабочий и полностью автономный.</br>
+
 #### Установка (install)
 ``` $ bower i CalculatorJS --save ```
 
-
-Представляет из себя класс калькулятора на нативном JavaScript (CoffeeScript). Файл demo.html рабочий и полностью автономный.</br>
-
-#### Demo 
+#### Демонстрация (Demo)
+Пример полностью живой и его можно потрогать скачав архив и запустив файл demo.html в своем браузере. </br> 
 ![CalculatorJS img demo](http://2.bp.blogspot.com/-qhaAz7gBBi8/VqPV6xjAogI/AAAAAAAAAZI/aboZ4acCLR4/s1600/calc.jpg "demo")
 
 #### Методы
