@@ -5,6 +5,8 @@
 
 
 Представляет из себя класс калькулятора на нативном JavaScript (CoffeeScript). Файл demo.html рабочий и полностью автономный.</br>
+
+#### Demo 
 ![CalculatorJS img demo](http://2.bp.blogspot.com/-qhaAz7gBBi8/VqPV6xjAogI/AAAAAAAAAZI/aboZ4acCLR4/s1600/calc.jpg "demo")
 
 #### Методы
