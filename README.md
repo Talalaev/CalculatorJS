@@ -23,8 +23,6 @@
     9. deleteChars: (str) ->
     10. changeSign: (str) ->
 	
-	
-	
 
 #### Свойства экземпляра объекта
 	``` @expression ```
