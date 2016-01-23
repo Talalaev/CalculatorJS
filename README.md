@@ -5,7 +5,7 @@
 
 
 Представляет из себя класс калькулятора на нативном JavaScript (CoffeeScript). Файл demo.html рабочий и полностью автономный.</br>
-![CalculatorJS img demo](http://1.bp.blogspot.com/-wW5wzrQcX2c/VqPUg41vhiI/AAAAAAAAAY8/_G4xDcH4xHw/s1600/calc.jpg "demo")
+![CalculatorJS img demo](http://2.bp.blogspot.com/-qhaAz7gBBi8/VqPV6xjAogI/AAAAAAAAAZI/aboZ4acCLR4/s1600/calc.jpg "demo")
 
 #### Методы
 1. @toGlue - Продклеивает к выражению значения по символьно, принимает два аргумента.</br>
