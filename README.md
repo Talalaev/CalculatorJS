@@ -7,15 +7,11 @@
 Представляет из себя класс калькулятора на нативном JavaScript (CoffeeScript). Файл demo.html рабочий и полностью автономный. 
 
 #### Методы
-1. @toGlue. Продклеивает к выражению значения по символьно. Принимает два аргумента (тип строка): `toGlue: (char, typeChar) ->`. 
+1. @toGlue. Продклеивает к выражению значения по символьно. Принимает два аргумента (тип строка): `toGlue: (char, typeChar) ->`.</br>
 Пример:
-	`
-	
-	self.expression = "2 +";</br>
+	`self.expression = "2 +";</br>
 	self.toGlue("3", "number");</br>
-	self.expression // "2 + 3"</br>
-	
-	`
+	self.expression // "2 + 3"</br>`
 	
 2. display: (elem, text) ->
 3. add: (str) ->
