@@ -9,9 +9,9 @@
 #### Методы
 1. @toGlue. Продклеивает к выражению значения по символьно. Принимает два аргумента (тип строка): `toGlue: (char, typeChar) ->`.</br>
 Пример:
-	`self.expression = "2 +";\A
-	self.toGlue("3", "number");\A
-	self.expression // "2 + 3"\A`
+	`self.expression = "2 +";\n
+	self.toGlue("3", "number");\n
+	self.expression // "2 + 3"\n`
 	
 2. display: (elem, text) ->
 3. add: (str) ->
