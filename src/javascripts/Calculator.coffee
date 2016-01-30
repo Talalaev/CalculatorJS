@@ -2,31 +2,72 @@
 # 1/0 = Infiniti
 # 0/0 = NaN
 # 8 * (9 : V dannom slu4ae ne rabotaet changeSign
+
+# bugs:
+# "((2 + 2)/4 * (16 - 1))/-3" - ne vvodit do conca dannoe virajenie. spotikaets9 na cifre 3 "((2 + 2)/4 * (16 - 1))/"
+# "((2" - ne men9et znak
+
+# BUGS FIXED !!!!
+
 class Calculator
     constructor: (@options)->
         @expression             = @options.expression || ""
         @lastCharType           = @options.lastCharType || ""
         
-    toGlue: (char, typeChar) ->
-        bracketsOpen    = if @expression.match(/\(/g) then @expression.match(/\(/g).length else 0
-        bracketsClose   = if @expression.match(/\)/g) then @expression.match(/\)/g).length else 0
-        return @expression if typeChar == "bracketClose" && bracketsOpen == bracketsClose
-        return @expression if @expression.length >= 26
-        return @expression if typeChar == "comma" && @expression.match(/\d+?\.\d+?$/)
-        return @expression if typeChar == "comma" && (@lastCharType != "number" || @lastCharType == "comma")
-        return @expression if typeChar == "bracketOpen" && (@lastCharType == "bracketClose" || @lastCharType == "comma" || @lastCharType == "number")
-        return @expression if (typeChar == "bracketClose" || typeChar == "operator" || typeChar == "comma") && (!@lastCharType || @lastCharType == "bracketOpen" || @lastCharType == "operator" || @lastCharType == "comma")
-            
-        if @lastCharType == "operator" && typeChar == "number"
-            @lastCharType = typeChar
-            return @expression += " " + char[0]
-        
-        if @lastCharType && typeChar != @lastCharType && typeChar != "comma" && typeChar != "bracketClose" && typeChar != "number"
-            @lastCharType = typeChar
-            return @expression += " " + char[0]
-        
-        @lastCharType = typeChar
-        @expression += char[0]
+    toGlue: (char, exp) ->
+        exp = @expression
+        if exp == ""
+            if isNumeric(char) || char == '('
+                return @expression += char
+
+        lastChar = exp.slice( exp.length - 1 )
+
+        if isNumeric(lastChar)
+            if isNumeric(char)
+                return @expression += char
+            if char == ')'
+                openBrackets = exp.match(/\(/g)
+                unless openBrackets
+                    return @expression
+                closeBrackets = exp.match(/\)/g)
+                if closeBrackets && openBrackets.length >= closeBrackets.length + 1 
+                    return @expression += char
+                else
+                    return @expression += char
+            if char == '+' || char == '-' || char == '*' || char == '/'
+                return @expression += char
+            if char == '.' && !exp.match(/\.[0-9]+$/)
+                return @expression += char
+
+        if lastChar == '('
+            if isNumeric(char) || char == '('
+                return @expression += char
+
+        if lastChar == ')'
+            if char == '+' || char == '-' || char == '*' || char == '/'
+                return @expression += char
+            if char == ')'
+                openBrackets = exp.match(/\(/g)
+                unless openBrackets
+                    return @expression
+                closeBrackets = exp.match(/\)/g)
+                if closeBrackets
+                    if openBrackets.length >= closeBrackets.length + 1
+                        return @expression += char
+                    else
+                        return @expression
+                else
+                    return @expression += char
+
+        if lastChar == '+' || lastChar == '-' || lastChar == '*' || lastChar == '/'
+            if isNumeric(char) || char == '(' 
+                return @expression += char
+
+        if lastChar == '.'
+            if isNumeric(char)
+                return @expression += char
+                
+        @expression
         
         
     display: (elem, text) ->
@@ -118,19 +159,39 @@ class Calculator
     
     
     changeSign: (str) ->
-        res = str.replace(/((\-?\d+\.?(\d+)?\)?) ([\+\-\*\/]) ((\-?)(\d+\.?(\d+)?)))$/, (str, allStr, num1, num1Float, operator, allNum2, sign, num2, num2Float)->
-            return "#{num1} + #{num2}" if operator == "-"
-            return "#{num1} - #{num2}" if operator == "+"
-            if (operator == "*" || operator == "/") && sign
-                return "#{num1} #{operator} #{num2}"
-            else
-                "#{num1} #{operator} -#{num2}"
+        num = null
+        str = str.replace(/(\d+\.?(\d+)?)$/, (match) ->
+            num = match
+            ""
         )
-        return res if res != str
-        str.replace(/^(\(?)((\-?)(\d+\.?(\d+)?))$/, (str, bracket, allNum, sign, num) ->
-            if sign
-                return "#{bracket}#{num}"
-            else
-                "#{bracket}-#{num}"
+
+        if num
+            lastChar = str.slice(-1)
+            if lastChar == ''
+                return "-" + num
+            if lastChar == '(' || lastChar == '*' || lastChar == '/'
+                str += "-" + num
+            if lastChar == '-'
+                if str[0] == '-' && str.length == 1
+                    str = num
+                else
+                    str = str.slice(0, -1) + "+" + num
+            if lastChar == '+'
+                str = str.slice(0, -1) + "-" + num
+
+        num = null
+        str = str.replace(/(\d+\.?(\d+)?)$/, (match) ->
+            num = match
+            ""
         )
-        
+
+        if num
+            lastTwoChars = str.slice(-2)
+            if lastTwoChars == '(+' || lastTwoChars == '*+' || lastTwoChars == '/+'
+                str = str.slice(0, -2) + lastTwoChars.slice(0,1) + num
+            else
+                str += num
+        str
+
+isNumeric = (n) ->
+    !isNaN(parseFloat(n)) && isFinite(n)

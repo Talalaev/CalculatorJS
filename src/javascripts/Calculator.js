@@ -1,4 +1,4 @@
-var Calculator;
+var Calculator, isNumeric;
 
 Calculator = (function() {
   function Calculator(options) {
@@ -7,38 +7,75 @@ Calculator = (function() {
     this.lastCharType = this.options.lastCharType || "";
   }
 
-  Calculator.prototype.toGlue = function(char, typeChar) {
-    var bracketsClose, bracketsOpen;
-    bracketsOpen = this.expression.match(/\(/g) ? this.expression.match(/\(/g).length : 0;
-    bracketsClose = this.expression.match(/\)/g) ? this.expression.match(/\)/g).length : 0;
-    if (typeChar === "bracketClose" && bracketsOpen === bracketsClose) {
-      return this.expression;
+  Calculator.prototype.toGlue = function(char, exp) {
+    var closeBrackets, lastChar, openBrackets;
+    exp = this.expression;
+    if (exp === "") {
+      if (isNumeric(char) || char === '(') {
+        return this.expression += char;
+      }
     }
-    if (this.expression.length >= 26) {
-      return this.expression;
+    lastChar = exp.slice(exp.length - 1);
+    if (isNumeric(lastChar)) {
+      if (isNumeric(char)) {
+        return this.expression += char;
+      }
+      if (char === ')') {
+        openBrackets = exp.match(/\(/g);
+        if (!openBrackets) {
+          return this.expression;
+        }
+        closeBrackets = exp.match(/\)/g);
+        if (closeBrackets && openBrackets.length >= closeBrackets.length + 1) {
+          return this.expression += char;
+        } else {
+          return this.expression += char;
+        }
+      }
+      if (char === '+' || char === '-' || char === '*' || char === '/') {
+        return this.expression += char;
+      }
+      if (char === '.' && !exp.match(/\.[0-9]+$/)) {
+        return this.expression += char;
+      }
     }
-    if (typeChar === "comma" && this.expression.match(/\d+?\.\d+?$/)) {
-      return this.expression;
+    if (lastChar === '(') {
+      if (isNumeric(char) || char === '(') {
+        return this.expression += char;
+      }
     }
-    if (typeChar === "comma" && (this.lastCharType !== "number" || this.lastCharType === "comma")) {
-      return this.expression;
+    if (lastChar === ')') {
+      if (char === '+' || char === '-' || char === '*' || char === '/') {
+        return this.expression += char;
+      }
+      if (char === ')') {
+        openBrackets = exp.match(/\(/g);
+        if (!openBrackets) {
+          return this.expression;
+        }
+        closeBrackets = exp.match(/\)/g);
+        if (closeBrackets) {
+          if (openBrackets.length >= closeBrackets.length + 1) {
+            return this.expression += char;
+          } else {
+            return this.expression;
+          }
+        } else {
+          return this.expression += char;
+        }
+      }
     }
-    if (typeChar === "bracketOpen" && (this.lastCharType === "bracketClose" || this.lastCharType === "comma" || this.lastCharType === "number")) {
-      return this.expression;
+    if (lastChar === '+' || lastChar === '-' || lastChar === '*' || lastChar === '/') {
+      if (isNumeric(char) || char === '(') {
+        return this.expression += char;
+      }
     }
-    if ((typeChar === "bracketClose" || typeChar === "operator" || typeChar === "comma") && (!this.lastCharType || this.lastCharType === "bracketOpen" || this.lastCharType === "operator" || this.lastCharType === "comma")) {
-      return this.expression;
+    if (lastChar === '.') {
+      if (isNumeric(char)) {
+        return this.expression += char;
+      }
     }
-    if (this.lastCharType === "operator" && typeChar === "number") {
-      this.lastCharType = typeChar;
-      return this.expression += " " + char[0];
-    }
-    if (this.lastCharType && typeChar !== this.lastCharType && typeChar !== "comma" && typeChar !== "bracketClose" && typeChar !== "number") {
-      this.lastCharType = typeChar;
-      return this.expression += " " + char[0];
-    }
-    this.lastCharType = typeChar;
-    return this.expression += char[0];
+    return this.expression;
   };
 
   Calculator.prototype.display = function(elem, text) {
@@ -165,32 +202,51 @@ Calculator = (function() {
   };
 
   Calculator.prototype.changeSign = function(str) {
-    var res;
-    res = str.replace(/((\-?\d+\.?(\d+)?\)?) ([\+\-\*\/]) ((\-?)(\d+\.?(\d+)?)))$/, function(str, allStr, num1, num1Float, operator, allNum2, sign, num2, num2Float) {
-      if (operator === "-") {
-        return num1 + " + " + num2;
-      }
-      if (operator === "+") {
-        return num1 + " - " + num2;
-      }
-      if ((operator === "*" || operator === "/") && sign) {
-        return num1 + " " + operator + " " + num2;
-      } else {
-        return num1 + " " + operator + " -" + num2;
-      }
+    var lastChar, lastTwoChars, num;
+    num = null;
+    str = str.replace(/(\d+\.?(\d+)?)$/, function(match) {
+      num = match;
+      return "";
     });
-    if (res !== str) {
-      return res;
+    if (num) {
+      lastChar = str.slice(-1);
+      if (lastChar === '') {
+        return "-" + num;
+      }
+      if (lastChar === '(' || lastChar === '*' || lastChar === '/') {
+        str += "-" + num;
+      }
+      if (lastChar === '-') {
+        if (str[0] === '-' && str.length === 1) {
+          str = num;
+        } else {
+          str = str.slice(0, -1) + "+" + num;
+        }
+      }
+      if (lastChar === '+') {
+        str = str.slice(0, -1) + "-" + num;
+      }
     }
-    return str.replace(/^(\(?)((\-?)(\d+\.?(\d+)?))$/, function(str, bracket, allNum, sign, num) {
-      if (sign) {
-        return "" + bracket + num;
-      } else {
-        return bracket + "-" + num;
-      }
+    num = null;
+    str = str.replace(/(\d+\.?(\d+)?)$/, function(match) {
+      num = match;
+      return "";
     });
+    if (num) {
+      lastTwoChars = str.slice(-2);
+      if (lastTwoChars === '(+' || lastTwoChars === '*+' || lastTwoChars === '/+') {
+        str = str.slice(0, -2) + lastTwoChars.slice(0, 1) + num;
+      } else {
+        str += num;
+      }
+    }
+    return str;
   };
 
   return Calculator;
 
 })();
+
+isNumeric = function(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+};
