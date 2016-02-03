@@ -1,5 +1,17 @@
 describe("Calculator::", function() {
     var calc = new Calculator({});
+    /*
+    var chars = ["(", ")", "2", "+", "-", "*", "/", "."],
+    exps = ["", "(", "3", "5.", "2+", "(2+", "((", "((2*", "((2*2)", "2-4", "4-7.", "(6/8)"],
+    disc = [],
+    count = 0;
+    
+    for (var i = 0, expsLength = exps.length; i < expsLength; i++) {
+        for (var j = 0 charsLength = chars.length; j < charsLength; j++) {
+            
+        }
+    }
+    */
     
     describe("@toGlue", function() {
         it("first char can't be comma", function() {
@@ -72,42 +84,42 @@ describe("Calculator::", function() {
         });
         
         it("after bracket Close can goes operator", function() {
-            expect(calc.toGlue("*", "operator")).toEqual("(45.7) *");
+            expect(calc.toGlue("*", "operator")).toEqual("(45.7)*");
         });
         
         it("after operator can't goes operator", function() {
-            expect(calc.toGlue("*", "operator")).toEqual("(45.7) *");
+            expect(calc.toGlue("*", "operator")).toEqual("(45.7)*");
         });
         
         it("after operator can't goes bracket Close", function() {
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7) *");
+            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7)*");
         });
         
         it("after operator can't goes comma", function() {
-            expect(calc.toGlue(".", "comma")).toEqual("(45.7) *");
+            expect(calc.toGlue(".", "comma")).toEqual("(45.7)*");
         });
         
         it("after operator can goes bracket Open or number", function() {
-            expect(calc.toGlue("4", "number")).toEqual("(45.7) * 4");
+            expect(calc.toGlue("4", "number")).toEqual("(45.7)*4");
         });
         
         it("after number can goes operator", function() {
-            expect(calc.toGlue("-", "operator")).toEqual("(45.7) * 4 -");
+            expect(calc.toGlue("-", "operator")).toEqual("(45.7)*4-");
         });
         
         it("after bracket Close can't goes comma", function() {
-            expect(calc.toGlue("(", "bracketOpen")).toEqual("(45.7) * 4 - (");
-            expect(calc.toGlue("8", "number")).toEqual("(45.7) * 4 - (8");
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7) * 4 - (8)");
-            expect(calc.toGlue(".", "comma")).toEqual("(45.7) * 4 - (8)");
+            expect(calc.toGlue("(", "bracketOpen")).toEqual("(45.7)*4-(");
+            expect(calc.toGlue("8", "number")).toEqual("(45.7)*4-(8");
+            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7)*4-(8)");
+            expect(calc.toGlue(".", "comma")).toEqual("(45.7)*4-(8)");
         });
         
         it("the number of open brackets equals the number of closed", function() {
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7) * 4 - (8)");
+            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7)*4-(8)");
         });
         
         it("after bracket Close can't goes bracket Open", function() {
-            expect(calc.toGlue("(", "bracketOpen")).toEqual("(45.7) * 4 - (8)");
+            expect(calc.toGlue("(", "bracketOpen")).toEqual("(45.7)*4-(8)");
         });
     });
     
@@ -205,15 +217,15 @@ describe("Calculator::", function() {
         });
         
         it("change operator '+' on '-' or '-' on '+'", function() {
-            expect(calc.changeSign("45 + 52")).toEqual("45 - 52");
+            expect(calc.changeSign("45+52")).toEqual("45-52");
         });
         
         it("change Sign when operator equal '*' or '/'", function() {
-            expect(calc.changeSign("45 * 52")).toEqual("45 * -52");
+            expect(calc.changeSign("45*52")).toEqual("45*-52");
         });
         
         it("change Sign when operator equal '*' or '/'", function() {
-            expect(calc.changeSign("45 * -52")).toEqual("45 * 52");
+            expect(calc.changeSign("45*-52")).toEqual("45*52");
         });
         
         it("change Sign in brackets", function() {
@@ -221,11 +233,11 @@ describe("Calculator::", function() {
         });
         
         it("change Sign after brackets", function() {
-            expect(calc.changeSign("(45 + 5) * 6")).toEqual("(45 + 5) * -6");
+            expect(calc.changeSign("(45+5)*6")).toEqual("(45+5)*-6");
         });
         
         it("change Sign after brackets", function() {
-            expect(calc.changeSign("(45 + 5) * -6")).toEqual("(45 + 5) * 6");
+            expect(calc.changeSign("(45+5)*-6")).toEqual("(45+5)*6");
         });
     });
     
