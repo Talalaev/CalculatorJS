@@ -15,111 +15,111 @@ describe("Calculator::", function() {
     
     describe("@toGlue", function() {
         it("first char can't be comma", function() {
-            expect(calc.toGlue(".", "comma")).toEqual("");
+            expect(calc.toGlue(".")).toEqual("");
         });
         
         it("first char can't be bracket Close", function() {
-            expect(calc.toGlue(")", "bracketClose")).toEqual("");
+            expect(calc.toGlue(")")).toEqual("");
         });
         
         it("first char can't be operator", function() {
-            expect(calc.toGlue("*", "operator")).toEqual("");
+            expect(calc.toGlue("*")).toEqual("");
         });
         
         it("first char can be bracket Open", function() {
-            expect(calc.toGlue("(", "bracketOpen")).toEqual("(");
+            expect(calc.toGlue("(")).toEqual("(");
         });
         
         it("after bracket Open can't goes bracket Close", function() {
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(");
+            expect(calc.toGlue(")")).toEqual("(");
         });
         
         it("after bracket Open can't goes comma", function() {
-            expect(calc.toGlue(".", "comma")).toEqual("(");
+            expect(calc.toGlue(".")).toEqual("(");
         });
         
         it("after bracket Open can't goes operator", function() {
-            expect(calc.toGlue("+", "operator")).toEqual("(");
+            expect(calc.toGlue("+")).toEqual("(");
         });
         
         it("after bracket Open can goes number", function() {
-            expect(calc.toGlue("4", "number")).toEqual("(4");
+            expect(calc.toGlue("4")).toEqual("(4");
         });
         
         it("after number can goes number", function() {
-            expect(calc.toGlue("5", "number")).toEqual("(45");
+            expect(calc.toGlue("5")).toEqual("(45");
         });
         
         it("after number can goes comma", function() {
-            expect(calc.toGlue(".", "comma")).toEqual("(45.");
+            expect(calc.toGlue(".")).toEqual("(45.");
         });
         
         it("after comma can't goes comma", function() {
-            expect(calc.toGlue(".", "comma")).toEqual("(45.");
+            expect(calc.toGlue(".")).toEqual("(45.");
         });
         
         it("after comma can't goes operator", function() {
-            expect(calc.toGlue("/", "operator")).toEqual("(45.");
+            expect(calc.toGlue("/")).toEqual("(45.");
         });
         
         it("after comma can't goes brackets", function() {
-            expect(calc.toGlue("(", "bracketOpen")).toEqual("(45.");
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.");
+            expect(calc.toGlue("(")).toEqual("(45.");
+            expect(calc.toGlue(")")).toEqual("(45.");
         });
         
         it("after comma can goes number", function() {
-            expect(calc.toGlue("7", "number")).toEqual("(45.7");
+            expect(calc.toGlue("7")).toEqual("(45.7");
         });
         
         it("after Float number can't goes comma", function() {
-            expect(calc.toGlue(".", "comma")).toEqual("(45.7");
+            expect(calc.toGlue(".")).toEqual("(45.7");
         });
         
         it("after number can't goes bracket Open", function() {
-            expect(calc.toGlue("(", "bracketOpen")).toEqual("(45.7");
+            expect(calc.toGlue("(")).toEqual("(45.7");
         });
         
         it("after number can goes bracket Close", function() {
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7)");
+            expect(calc.toGlue(")")).toEqual("(45.7)");
         });
         
         it("after bracket Close can goes operator", function() {
-            expect(calc.toGlue("*", "operator")).toEqual("(45.7)*");
+            expect(calc.toGlue("*")).toEqual("(45.7)*");
         });
         
         it("after operator can't goes operator", function() {
-            expect(calc.toGlue("*", "operator")).toEqual("(45.7)*");
+            expect(calc.toGlue("*")).toEqual("(45.7)*");
         });
         
         it("after operator can't goes bracket Close", function() {
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7)*");
+            expect(calc.toGlue(")")).toEqual("(45.7)*");
         });
         
         it("after operator can't goes comma", function() {
-            expect(calc.toGlue(".", "comma")).toEqual("(45.7)*");
+            expect(calc.toGlue(".")).toEqual("(45.7)*");
         });
         
         it("after operator can goes bracket Open or number", function() {
-            expect(calc.toGlue("4", "number")).toEqual("(45.7)*4");
+            expect(calc.toGlue("4")).toEqual("(45.7)*4");
         });
         
         it("after number can goes operator", function() {
-            expect(calc.toGlue("-", "operator")).toEqual("(45.7)*4-");
+            expect(calc.toGlue("-")).toEqual("(45.7)*4-");
         });
         
         it("after bracket Close can't goes comma", function() {
-            expect(calc.toGlue("(", "bracketOpen")).toEqual("(45.7)*4-(");
-            expect(calc.toGlue("8", "number")).toEqual("(45.7)*4-(8");
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7)*4-(8)");
-            expect(calc.toGlue(".", "comma")).toEqual("(45.7)*4-(8)");
+            expect(calc.toGlue("(")).toEqual("(45.7)*4-(");
+            expect(calc.toGlue("8")).toEqual("(45.7)*4-(8");
+            expect(calc.toGlue(")")).toEqual("(45.7)*4-(8)");
+            expect(calc.toGlue(".")).toEqual("(45.7)*4-(8)");
         });
         
         it("the number of open brackets equals the number of closed", function() {
-            expect(calc.toGlue(")", "bracketClose")).toEqual("(45.7)*4-(8)");
+            expect(calc.toGlue(")")).toEqual("(45.7)*4-(8)");
         });
         
         it("after bracket Close can't goes bracket Open", function() {
-            expect(calc.toGlue("(", "bracketOpen")).toEqual("(45.7)*4-(8)");
+            expect(calc.toGlue("(")).toEqual("(45.7)*4-(8)");
         });
     });
     

@@ -15,7 +15,7 @@ class Calculator
         @lastCharType           = @options.lastCharType || ""
         
     toGlue: (char, exp) ->
-        exp = @expression
+        exp = @expression unless exp
         if exp == ""
             if isNumeric(char) || char == '('
                 return @expression += char

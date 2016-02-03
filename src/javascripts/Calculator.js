@@ -9,7 +9,9 @@ Calculator = (function() {
 
   Calculator.prototype.toGlue = function(char, exp) {
     var closeBrackets, lastChar, openBrackets;
-    exp = this.expression;
+    if (!exp) {
+      exp = this.expression;
+    }
     if (exp === "") {
       if (isNumeric(char) || char === '(') {
         return this.expression += char;

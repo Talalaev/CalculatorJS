@@ -1,4 +1,4 @@
-/*! Calculator 2016-01-30 */
+/*! Calculator 2016-02-03 */
 var Calc_template = ''
     +'<div id="calc_area">'
         +'<div id="calc_display"></div>'
@@ -35,7 +35,9 @@ Calculator = (function() {
 
   Calculator.prototype.toGlue = function(char, exp) {
     var closeBrackets, lastChar, openBrackets;
-    exp = this.expression;
+    if (!exp) {
+      exp = this.expression;
+    }
     if (exp === "") {
       if (isNumeric(char) || char === '(') {
         return this.expression += char;
